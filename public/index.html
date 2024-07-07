@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贷款预批信生成器</title>
+</head>
+<body>
+    <h1>贷款预批信生成器</h1>
+    <form id="loanForm">
+        <label for="name">借款人姓名： </label>
+        <input type="text" id="name" required><br><br>
+        <label for="address">房产地址： </label>
+        <input type="text" id="address" required><br><br>
+        <label for="date">日期： </label>
+        <input type="date" id="date" required><br><br>
+        <label for="purchasePrice">购买价格： </label>
+        <input type="number" id="purchasePrice" required><br><br>
+        <label for="loanAmount">贷款金额： </label>
+        <input type="number" id="loanAmount" required><br><br>
+        <label for="contactName">联系人姓名： </label>
+        <input type="text" id="contactName" placeholder="Ivan Gao"  value="Ivan Gao" required><br><br>
+        <label for="contactPhone">联系电话： </label>
+        <input type="text" id="contactPhone" placeholder="917-378-3328" value="917-378-3328" required><br><br>
+        <button type="button" onclick="submitForm()">生成PDF</button>
+    </form>
+
+    <script>
+        function submitForm() {
+    const name = document.getElementById('name').value;
+    const address = document.getElementById('address').value;
+    const date = document.getElementById('date').value;
+    const purchasePrice = document.getElementById('purchasePrice').value;
+    const loanAmount = document.getElementById('loanAmount').value;
+    const contactName = document.getElementById('contactName').value;
+    const contactPhone = document.getElementById('contactPhone').value;
+
+    fetch('/create-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name, address, date, purchasePrice, loanAmount, contactName, contactPhone
+        })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pre-approval.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error:', error));
+}
+    </script>
+</body>
+</html>
